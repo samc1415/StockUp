@@ -6,10 +6,14 @@ import Link from "next/link"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import {
+  ChartArea,
   CircleUser,
+  Download,
+  Home,
   Menu,
   Package,
   Package2,
+  Upload,
   Users,
 } from "lucide-react"
 
@@ -42,23 +46,43 @@ export default function DashboardLayout({
       enableSystem
       disableTransitionOnChange
     >
+<<<<<<< HEAD
+      <div className="bg-[#393d32] dark:bg-transparent grid min-h-[calc(100vh-52px)] w-full md:grid-cols-[180px_1fr] lg:grid-cols-[240px_1fr]">
+=======
       <div className="bg-[#393d32] dark:bg-transparent grid min-h-screen w-full md:grid-cols-[180px_1fr] lg:grid-cols-[240px_1fr]">
+>>>>>>> ed53fb7 (Updated files)
         <div className="hidden md:block dark:bg-muted/40">
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-14 items-center px-4 lg:h-[60px] lg:px-6">
               <Link href="/" className="text-white flex items-center gap-2 font-semibold">
                 <SiStockx className="h-6 w-6" />
-                <span className="">StockUp</span>
+                <span className="">Stockup</span>
               </Link>
             </div>
             <div className="flex-1">
               <nav className="grid gap-4 items-start text-sm font-medium mt-8">
+              <Link
+                  href="/dashboard/user"
+                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user' && 'bg-[#2e3327] dark:bg-muted'
+                    }`}
+                >
+                  <Home className="h-4 w-4" />
+                  Dashboard
+                </Link>
+                <Link
+                  href="/dashboard/user/portfolio"
+                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/portfolio' && 'bg-[#2e3327] dark:bg-muted'
+                    }`}
+                >
+                  <Package className="h-4 w-4" />
+                  Porfolio
+                </Link>
                 <Link
                   href="/dashboard/user/transaction-history"
                   className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/transaction-history' && 'bg-[#2e3327] dark:bg-muted'
                     }`}
                 >
-                  <Package className="h-4 w-4" />
+                  <ChartArea className="h-4 w-4" />
                   Transactions
                 </Link>
                 <Link
@@ -66,7 +90,7 @@ export default function DashboardLayout({
                   className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 text-muted-foreground transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/deposit' && 'bg-[#2e3327] dark:bg-muted'
                     }`}
                 >
-                  <Users className="h-4 w-4" />
+                  <Download className="h-4 w-4" />
                   Deposit Cash
                 </Link>
                 <Link
@@ -74,7 +98,7 @@ export default function DashboardLayout({
                   className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 text-muted-foreground transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/withdraw' && 'bg-[#2e3327] dark:bg-muted'
                     }`}
                 >
-                  <Users className="h-4 w-4" />
+                  <Upload className="h-4 w-4" />
                   Withdraw Cash
                 </Link>
               </nav>
@@ -101,7 +125,7 @@ export default function DashboardLayout({
                     className="flex items-center gap-2 text-lg font-semibold"
                   >
                     <Package2 className="sr-only h-6 w-6" />
-                    <span className="sr-only">StockUp</span>
+                    <span className="sr-only">Samstocks</span>
                   </Link>
                   <Link
                     href="/dashboard/user/transaction-history"
@@ -130,7 +154,7 @@ export default function DashboardLayout({
             <div className="md:hidden flex h-14 items-center pr-4 lg:h-[60px] lg:px-6">
               <Link href="/" className="text-white flex items-center gap-2 font-semibold">
                 <SiStockx className="h-4 w-4 md:h-6 md:w-6" />
-                <span className="text-sm">StockUp</span>
+                <span className="text-sm">SamStocks</span>
               </Link>
             </div>
 
