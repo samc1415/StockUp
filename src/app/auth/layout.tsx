@@ -6,11 +6,10 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-<<<<<<< HEAD
+HEAD
     <div className="w-full lg:grid lg:grid-cols-3 min-h-[calc(100vh-52px)]">
-=======
     <div className="w-full lg:grid lg:grid-cols-3 min-h-screen">
->>>>>>> ed53fb7 (Updated files)
+ed53fb7 (Updated files)
       {children}
     </div>
   )
