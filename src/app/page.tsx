@@ -3,9 +3,6 @@ import { SiStockx } from "react-icons/si";
 
 export default function Home() {
   return (
-
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vh-52px)] p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <div className="flex">
@@ -13,7 +10,7 @@ export default function Home() {
           <p className="text-4xl">Stockup</p>
         </div>
         <div className="text-center">
-          <p className="uppercase font-bold">Welcome to stockup</p>
+          <p className="uppercase font-bold">Welcome to Stockup</p>
           <p className="text-sm">Your all-in-one stock trading partner</p>
         </div>
 
