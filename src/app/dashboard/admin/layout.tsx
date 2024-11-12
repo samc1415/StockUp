@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from "next/link"
 import { usePathname } from 'next/navigation';
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme-provider";
 
 import {
   ChartArea,
