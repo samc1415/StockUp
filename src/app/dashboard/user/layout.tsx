@@ -28,9 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "@/components/ui/modeToggle";
-import {
-  SiStockx,
-} from "react-icons/si";
+import { SiStockx } from "react-icons/si";
 
 export default function DashboardLayout({
   children,
@@ -46,10 +44,7 @@ export default function DashboardLayout({
       enableSystem
       disableTransitionOnChange
     >
-
       <div className="bg-[#393d32] dark:bg-transparent grid min-h-[calc(100vh-52px)] w-full md:grid-cols-[180px_1fr] lg:grid-cols-[240px_1fr]">
-
-      <div className="bg-[#393d32] dark:bg-transparent grid min-h-screen w-full md:grid-cols-[180px_1fr] lg:grid-cols-[240px_1fr]">
         <div className="hidden md:block dark:bg-muted/40">
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-14 items-center px-4 lg:h-[60px] lg:px-6">
@@ -60,42 +55,37 @@ export default function DashboardLayout({
             </div>
             <div className="flex-1">
               <nav className="grid gap-4 items-start text-sm font-medium mt-8">
-              <Link
+                <Link
                   href="/dashboard/user"
-                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user' && 'bg-[#2e3327] dark:bg-muted'
-                    }`}
+                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user' && 'bg-[#2e3327] dark:bg-muted'}`}
                 >
                   <Home className="h-4 w-4" />
                   Dashboard
                 </Link>
                 <Link
                   href="/dashboard/user/portfolio"
-                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/portfolio' && 'bg-[#2e3327] dark:bg-muted'
-                    }`}
+                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/portfolio' && 'bg-[#2e3327] dark:bg-muted'}`}
                 >
                   <Package className="h-4 w-4" />
                   Porfolio
                 </Link>
                 <Link
                   href="/dashboard/user/transaction-history"
-                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/transaction-history' && 'bg-[#2e3327] dark:bg-muted'
-                    }`}
+                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/transaction-history' && 'bg-[#2e3327] dark:bg-muted'}`}
                 >
                   <ChartArea className="h-4 w-4" />
                   Transactions
                 </Link>
                 <Link
                   href="/dashboard/user/deposit"
-                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 text-muted-foreground transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/deposit' && 'bg-[#2e3327] dark:bg-muted'
-                    }`}
+                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 text-muted-foreground transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/deposit' && 'bg-[#2e3327] dark:bg-muted'}`}
                 >
                   <Download className="h-4 w-4" />
                   Deposit Cash
                 </Link>
                 <Link
                   href="/dashboard/user/withdraw"
-                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 text-muted-foreground transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/withdraw' && 'bg-[#2e3327] dark:bg-muted'
-                    }`}
+                  className={`text-white flex items-center gap-3 pl-6 pr-3 py-2 text-muted-foreground transition-all hover:bg-[#2e3327] dark:hover:bg-muted ${pathname === '/dashboard/user/withdraw' && 'bg-[#2e3327] dark:bg-muted'}`}
                 >
                   <Upload className="h-4 w-4" />
                   Withdraw Cash
