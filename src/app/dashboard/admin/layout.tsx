@@ -1,7 +1,6 @@
-"use client"
-
+"use client";
 import React from 'react';
-import Link from "next/link"
+import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -14,10 +13,10 @@ import {
   Package2,
   ShoppingCart,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,17 +24,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ModeToggle } from "@/components/ui/modeToggle"
-import {
-  SiStockx,
-} from "react-icons/si";
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ModeToggle } from "@/components/ui/modeToggle";
+import { SiStockx } from "react-icons/si";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   const pathname = usePathname();
 
@@ -46,11 +43,7 @@ export default function DashboardLayout({
       enableSystem
       disableTransitionOnChange
     >
-<<<<<<< HEAD
       <div className="bg-[#393d32] dark:bg-transparent grid min-h-[calc(100vh-52px)] w-full md:grid-cols-[180px_1fr] lg:grid-cols-[240px_1fr]">
-=======
-      <div className="bg-[#393d32] dark:bg-transparent grid min-h-screen w-full md:grid-cols-[180px_1fr] lg:grid-cols-[240px_1fr]">
->>>>>>> ed53fb7 (Updated files)
         <div className="hidden md:block dark:bg-muted/40">
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-14 items-center px-4 lg:h-[60px] lg:px-6">
@@ -108,7 +101,6 @@ export default function DashboardLayout({
                   variant="outline"
                   size="icon"
                   className="shrink-0 md:hidden ml-4"
-
                 >
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle navigation menu</span>
@@ -190,5 +182,5 @@ export default function DashboardLayout({
       </div>
 
     </ThemeProvider>
-  )
+  );
 }
