@@ -12,4 +12,5 @@ HEAD
 ed53fb7 (Updated files)
       {children}
     </div>
+    )
 }
