@@ -218,6 +218,7 @@ export default function BuySellStocks() {
             </div>
          )}
       </div>
+      );
          /* Confirmation Modal */
          {showModal && (
             <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
