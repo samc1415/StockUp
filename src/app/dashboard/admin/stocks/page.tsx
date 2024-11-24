@@ -1,14 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
    DropdownMenu,
    DropdownMenuContent,
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
    Table,
    TableBody,
@@ -20,23 +19,23 @@ import {
 import { Fragment, useState, useEffect } from "react";
 import { MoreHorizontal } from "lucide-react";
 
-function stockTable() {
-   type stock = {
-      stockID: string;
-      displayName: string;
-      displayCode: string;
-      createDate: string;
-      latestPrice: number;
-      volume: number;
-   };
+type Stock = {
+   stockID: string;
+   displayName: string;
+   displayCode: string;
+   createDate: string;
+   latestPrice: number;
+   volume: number;
+};
 
-   const [data, setData] = useState<stock[]>();
+export default function StockTable() {
+   const [data, setData] = useState<Stock[]>([]);
    const [isLoading, setIsLoading] = useState(true);
    const [isEdit, setIsEdit] = useState(false);
 
-   const [stockDisplayName, setStockDisplayName] = useState(String);
-   const [stockDisplayTick, setStockDisplayTick] = useState(String);
-   const [stockCurrentPrice, setStockCurrentPrice] = useState(String);
+   const [stockDisplayName, setStockDisplayName] = useState<string>("");
+   const [stockDisplayTick, setStockDisplayTick] = useState<string>("");
+   const [stockCurrentPrice, setStockCurrentPrice] = useState<string>("");
 
    const [isDisplayChange, setIsDisplayChanged] = useState(false);
    const [isTickerChange, setIsTickerChanged] = useState(false);
@@ -48,39 +47,24 @@ function stockTable() {
       minimumFractionDigits: 2,
    });
 
-   
-
-   const saveStock = async (stockID: String, event: any) => {
+   const saveStock = async (stockID: string, event: React.FormEvent) => {
       event.preventDefault();
-      let urlDisplayName =
-         "https://apiz.zachklimowicz.com/stock/" +
-         stockID +
-         "/name?newName=" +
-         stockDisplayName;
-      let urlDisplayCode =
-         "https://apiz.zachklimowicz.com/stock/" +
-         stockID +
-         "/code?newCode=" +
-         stockDisplayTick;
-      let urlStockPrice =
-         "https://apiz.zachklimowicz.com/stock/" +
-         stockID +
-         "/price?newPrice=" +
-         stockCurrentPrice;
+      const urlDisplayName = `https://apiz.zachklimowicz.com/stock/${stockID}/name?newName=${stockDisplayName}`;
+      const urlDisplayCode = `https://apiz.zachklimowicz.com/stock/${stockID}/code?newCode=${stockDisplayTick}`;
+      const urlStockPrice = `https://apiz.zachklimowicz.com/stock/${stockID}/price?newPrice=${stockCurrentPrice}`;
 
       if (isDisplayChange) {
          try {
             const response = await fetch(urlDisplayName, {
                method: "PATCH",
                headers: {
-                  ContentType: "application/json",
+                  "Content-Type": "application/json",
                },
             });
             if (!response.ok) {
-               response.text().then((message) => {
-                  alert("Error during display name update: " + message);
-                  throw new Error(message);
-               });
+               const message = await response.text();
+               alert("Error during display name update: " + message);
+               throw new Error(message);
             }
          } catch (err) {
             alert(err);
@@ -94,14 +78,13 @@ function stockTable() {
             const response = await fetch(urlDisplayCode, {
                method: "PATCH",
                headers: {
-                  ContentType: "application/json",
+                  "Content-Type": "application/json",
                },
             });
             if (!response.ok) {
-               response.text().then((message) => {
-                  alert("Error during ticker update: " + message);
-                  throw new Error(message);
-               });
+               const message = await response.text();
+               alert("Error during ticker update: " + message);
+               throw new Error(message);
             }
          } catch (err) {
             alert(err);
@@ -115,47 +98,40 @@ function stockTable() {
             const response = await fetch(urlStockPrice, {
                method: "PATCH",
                headers: {
-                  ContentType: "application/json",
+                  "Content-Type": "application/json",
                },
             });
             if (!response.ok) {
-               response.text().then((message) => {
-                  alert("Error during pricing update: " + message);
-                  throw new Error(message);
-               });
+               const message = await response.text();
+               alert("Error during pricing update: " + message);
+               throw new Error(message);
             }
          } catch (err) {
             alert(err);
             console.error(err);
          }
-         setIsDisplayChanged(false);
+         setIsPriceChanged(false);
       }
-      setIsEdit(false)
+      setIsEdit(false);
       window.location.reload();
-      
    };
 
-   const deleteStock = async (stockID: String, event: any) => {
-      if (
-         confirm(
-            "Are you sure you want to delete the stock? This cannot be undone."
-         )
-      ) {
-         var url = "https://apiz.zachklimowicz.com/stocks/delete/" + stockID;
+   const deleteStock = async (stockID: string) => {
+      if (confirm("Are you sure you want to delete the stock? This cannot be undone.")) {
+         const url = `https://apiz.zachklimowicz.com/stocks/delete/${stockID}`;
          try {
             const response = await fetch(url, {
-               method: "delete",
+               method: "DELETE",
             });
 
             if (!response.ok) {
-               response.text().then((message) => {
-                  alert(message);
-                  console.log(message);
-               });
+               const message = await response.text();
+               alert(message);
+               console.log(message);
             } else {
                alert("User " + stockID + " deleted successfully.");
+               window.location.reload();
             }
-            window.location.reload();
          } catch (err) {
             alert("Stock delete failed");
             console.error(err);
@@ -230,7 +206,7 @@ function stockTable() {
                         }}
                      />
                   ) : (
-                    currFormat.format(stock.latestPrice)
+                     currFormat.format(stock.latestPrice)
                   )}
                </TableCell>
                <DropdownMenu>
@@ -244,7 +220,7 @@ function stockTable() {
                      <DropdownMenuContent align="end">
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={(e) => {
+                           onClick={() => {
                               setIsEdit(true);
                            }}
                         >
@@ -252,8 +228,8 @@ function stockTable() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={(e) => {
-                              deleteStock(stock.stockID, e);
+                           onClick={() => {
+                              deleteStock(stock.stockID);
                            }}
                         >
                            Delete
@@ -269,7 +245,7 @@ function stockTable() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={(e) => {
+                           onClick={() => {
                               setIsEdit(false);
                            }}
                         >
@@ -283,6 +259,7 @@ function stockTable() {
       </Fragment>
    );
 }
+
 
 export default function Stocks() {
    const [name, setName] = useState("");
