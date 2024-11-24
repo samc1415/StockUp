@@ -36,12 +36,11 @@ export default function BuySellStocks() {
    const [searchQuery, setSearchQuery] = useState("");
    const [showModal, setShowModal] = useState(false);
    const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
-   const [transactionAction, setTransactionAction] = useState<"buy" | "sell">(
-      "buy"
-   );
+   const [transactionAction, setTransactionAction] = useState<"buy" | "sell">("buy");
    const [quantity, setQuantity] = useState(1);
    const [isAmountConfirmed, setIsAmountConfirmed] = useState(false);
    const [confirmationTime, setConfirmationTime] = useState(60);
+   const [userCookie] = useCookies(["UserID"]);
 
    // Fetch stock list from API
    const fetchStocks = async () => {
@@ -171,76 +170,54 @@ export default function BuySellStocks() {
    );
 
    return (
-      <>
-         <div className="flex items-center">
-            <h1 className="text-lg font-bold md:text-3xl">Buy/Sell Stocks</h1>
-         </div>
-         <div>
-            <Input
-               className="rounded-full w-1/2 ml-auto"
-               placeholder="Search stocks..."
-               value={searchQuery}
-               onChange={(e) => setSearchQuery(e.target.value)}
-            />
-
-            <Table className="mt-6">
-               <TableHeader>
-                  <TableRow>
-                     <TableHead className="hidden md:table-cell">
-                        Stock Ticker
-                     </TableHead>
-                     <TableHead>Price (USD)</TableHead>
-                     <TableHead className="hidden md:table-cell">
-                        High (Today)
-                     </TableHead>
-                     <TableHead className="hidden md:table-cell">
-                        Low (Today)
-                     </TableHead>
-                     <TableHead>Volume</TableHead>
-                     <TableHead>Actions</TableHead>
+      <div>
+         <h1>Buy & Sell Stocks</h1>
+         <Input
+            type="text"
+            placeholder="Search stocks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+         />
+         <Table>
+            <TableHeader>
+               <TableRow>
+                  <TableCell>Stock Name</TableCell>
+                  <TableCell>Latest Price</TableCell>
+                  <TableCell>Actions</TableCell>
+               </TableRow>
+            </TableHeader>
+            <TableBody>
+               {filteredStocks.map((stock) => (
+                  <TableRow key={stock.stockID}>
+                     <TableCell>{stock.displayName}</TableCell>
+                     <TableCell>{stock.latestPrice}</TableCell>
+                     <TableCell>
+                        <Button onClick={() => handleBuy(stock)}>Buy</Button>
+                        <Button onClick={() => handleSell(stock)}>Sell</Button>
+                     </TableCell>
                   </TableRow>
-               </TableHeader>
-               <TableBody>
-                  {filteredStocks.map((stock) => {
-                     const prices = priceData[stock.stockID] || [];
-                     const { high, low } = calculateHighLow(prices);
-
-                     return (
-                        <TableRow key={stock.stockID}>
-                           <TableCell className="hidden md:table-cell">
-                              {stock.displayCode}
-                           </TableCell>
-                           <TableCell className="font-medium">
-                              ${stock.latestPrice}
-                           </TableCell>
-                           <TableCell className="hidden md:table-cell">
-                              {typeof high === "number"
-                                 ? `$${high.toFixed(2)}`
-                                 : "Loading..."}
-                           </TableCell>
-                           <TableCell className="hidden md:table-cell">
-                              {typeof low === "number"
-                                 ? `$${low.toFixed(2)}`
-                                 : "Loading..."}
-                           </TableCell>
-                           <TableCell>
-                              {stock.volume.toLocaleString()}
-                           </TableCell>
-                           <TableCell className="flex gap-2">
-                              <Button onClick={() => handleBuy(stock)}>
-                                 Buy
-                              </Button>
-                              <Button onClick={() => handleSell(stock)}>
-                                 Sell
-                              </Button>
-                           </TableCell>
-                        </TableRow>
-                     );
-                  })}
-               </TableBody>
-            </Table>
-         </div>
-
+               ))}
+            </TableBody>
+         </Table>
+         {showModal && selectedStock && (
+            <div>
+               <h2>{transactionAction === "buy" ? "Buy" : "Sell"} {selectedStock.displayName}</h2>
+               <p>Price: {selectedStock.latestPrice}</p>
+               <Input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value))}
+               />
+               <Button onClick={handleConfirmAmount}>Confirm Amount</Button>
+               {isAmountConfirmed && (
+                  <div>
+                     <p>Confirming in {confirmationTime} seconds...</p>
+                     <Button onClick={handleConfirmTransaction}>Confirm Transaction</Button>
+                  </div>
+               )}
+            </div>
+         )}
+      </div>
          {/* Confirmation Modal */}
          {showModal && (
             <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
