@@ -179,13 +179,13 @@ export default function BuySellStocks() {
             onChange={(e) => setSearchQuery(e.target.value)}
          />
          <Table>
-            <TableHeader>
+            <TableHead>
                <TableRow>
                   <TableCell>Stock Name</TableCell>
                   <TableCell>Latest Price</TableCell>
                   <TableCell>Actions</TableCell>
                </TableRow>
-            </TableHeader>
+            </TableHead>
             <TableBody>
                {filteredStocks.map((stock) => (
                   <TableRow key={stock.stockID}>
@@ -200,27 +200,6 @@ export default function BuySellStocks() {
             </TableBody>
          </Table>
          {showModal && selectedStock && (
-            <div>
-               <h2>{transactionAction === "buy" ? "Buy" : "Sell"} {selectedStock.displayName}</h2>
-               <p>Price: {selectedStock.latestPrice}</p>
-               <Input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(parseInt(e.target.value))}
-               />
-               <Button onClick={handleConfirmAmount}>Confirm Amount</Button>
-               {isAmountConfirmed && (
-                  <div>
-                     <p>Confirming in {confirmationTime} seconds...</p>
-                     <Button onClick={handleConfirmTransaction}>Confirm Transaction</Button>
-                  </div>
-               )}
-            </div>
-         )}
-      </div>
-      );
-         /* Confirmation Modal */
-         {showModal && (
             <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
                <div className="bg-white p-6 rounded-lg shadow-lg">
                   <h3 className="text-xl font-bold text-black">
@@ -232,11 +211,7 @@ export default function BuySellStocks() {
                      value={quantity}
                      onChange={(e) => setQuantity(Number(e.target.value))}
                      min="1"
-                     max={
-                        transactionAction === "buy"
-                           ? undefined
-                           : selectedStock?.volume
-                     }
+                     max={transactionAction === "buy" ? undefined : selectedStock?.volume}
                      className="text-black"
                   />
                   <div className="mt-4 flex flex-col gap-2">
@@ -269,5 +244,7 @@ export default function BuySellStocks() {
                </div>
             </div>
          )}
+      </div>
    );
 }
+
