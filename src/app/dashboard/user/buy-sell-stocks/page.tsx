@@ -269,6 +269,6 @@ export default function BuySellStocks() {
                </div>
             </div>
          )}
-      </>
+      </div>
    );
 }
