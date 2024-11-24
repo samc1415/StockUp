@@ -34,8 +34,6 @@ export default function BuySellStocks() {
    const [stocks, setStocks] = useState<Stock[]>([]);
    const [priceData, setPriceData] = useState<Record<string, PriceData[]>>({});
    const [searchQuery, setSearchQuery] = useState("");
-   const [tokenCookie, setTokenCookie] = useCookies(["AccessToken"]);
-   const [userCookie, setUserCookie] = useCookies(["UserID"]);
    const [showModal, setShowModal] = useState(false);
    const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
    const [transactionAction, setTransactionAction] = useState<"buy" | "sell">(
