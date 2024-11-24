@@ -28,7 +28,7 @@ type Stock = {
    volume: number;
 };
 
-export default function StockTable() {
+function StockTable() {
    const [data, setData] = useState<Stock[]>([]);
    const [isLoading, setIsLoading] = useState(true);
    const [isEdit, setIsEdit] = useState(false);
