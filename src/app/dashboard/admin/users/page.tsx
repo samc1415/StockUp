@@ -17,59 +17,55 @@ import {
    TableHeader,
    TableRow,
 } from "@/components/ui/table";
-import { error } from "console";
 import { MoreHorizontal } from "lucide-react";
-import { Fragment, useState, useEffect, useReducer } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import md5 from "md5";
 
-function userTable() {
-   type User = {
-      userID: string;
-      userType: number;
-      username: string;
-      displayName: string;
-      wallet: number;
-      startingWallet: number;
-   };
+type User = {
+   userID: string;
+   userType: number;
+   username: string;
+   displayName: string;
+   wallet: number;
+   startingWallet: number;
+};
 
+export default function UserTable() {
    const router = useRouter();
 
-   const [data, setData] = useState<User[]>();
+   const [data, setData] = useState<User[]>([]);
    const [showEdit, setShowEdit] = useState(false);
    const [isLoading, setIsLoading] = useState(true);
    const [isCreate, setIsCreate] = useState(false);
    const [userCreateType, setUserCreateType] = useState("User");
-   const [newUserName, setNewUserName] = useState(String);
-   const [newUserDisplay, setNewUserDisplay] = useState(String);
-   const [newUserRole, setNewUserRole] = useState(Number);
-   const [newUserWallet, setNewUserWallet] = useState(String);
-   const [newUserPassword, setNewUserPassword] = useState(String);
-   const [editUserPassword, setEditUserPassword] = useState(String);
-   const [editUserDisplayName, setEditUserDisplayName] = useState(String);
-   const [editUserWallet, setEditUserWallet] = useState(String);
-   const [hasWalletChanged, setHasWalletChanged] = useState(false)
-   const [hasDisplayChanged, setHasDisplayChanged] = useState(false)
-   const crypto = require("crypto");
+   const [newUserName, setNewUserName] = useState<string>("");
+   const [newUserDisplay, setNewUserDisplay] = useState<string>("");
+   const [newUserRole, setNewUserRole] = useState<number>(0);
+   const [newUserWallet, setNewUserWallet] = useState<string>("");
+   const [newUserPassword, setNewUserPassword] = useState<string>("");
+   const [editUserDisplayName, setEditUserDisplayName] = useState<string>("");
+   const [editUserWallet, setEditUserWallet] = useState<string>("");
+   const [hasWalletChanged, setHasWalletChanged] = useState(false);
+   const [hasDisplayChanged, setHasDisplayChanged] = useState(false);
 
-   //Deletes a user after confirmation from user
-   const deleteUser = async (userID: String, event: any) => {
+   // Deletes a user after confirmation from user
+   const deleteUser = async (userID: string) => {
       if (
          confirm(
             "Are you sure you want to delete the user? This cannot be undone."
          )
       ) {
-         var url = "https://apiz.zachklimowicz.com/users/delete/" + userID;
+         const url = "https://apiz.zachklimowicz.com/users/delete/" + userID;
          try {
             const response = await fetch(url, {
-               method: "delete",
+               method: "DELETE",
             });
 
             if (!response.ok) {
-               response.text().then((message) => {
-                  alert(message);
-                  console.log(message);
-               });
+               const message = await response.text();
+               alert(message);
+               console.log(message);
             } else {
                alert("User " + userID + " deleted successfully.");
             }
@@ -77,13 +73,13 @@ function userTable() {
             alert("User delete failed");
             console.error(err);
          }
+         window.location.reload();
       } else {
          alert("User deletion cancelled.");
       }
-      window.location.reload();
    };
 
-   //Creates a new user on create action on table
+   // Creates a new user on create action on table
    const createUser = async () => {
       try {
          const response = await fetch(
@@ -104,10 +100,9 @@ function userTable() {
          );
 
          if (!response.ok) {
-            response.text().then((message) => {
-               alert(message);
-               console.log(message);
-            });
+            const message = await response.text();
+            alert(message);
+            console.log(message);
          } else {
             alert("New user " + newUserDisplay + " created successfully.");
          }
@@ -120,34 +115,31 @@ function userTable() {
       window.location.reload();
    };
 
-   //Saves an edit action
-   const saveUserChanges = async (userID: String, event: any) => {
-      event.preventDefault();
-
-      var urlWallet =
+   // Saves an edit action
+   const saveUserChanges = async (userID: string) => {
+      const urlWallet =
          "https://apiz.zachklimowicz.com/users/" +
          userID +
          "/wallet?newAmount=" +
          editUserWallet;
-      var urlDisplay =
+      const urlDisplay =
          "https://apiz.zachklimowicz.com/users/" +
          userID +
          "/name?newName=" +
          editUserDisplayName;
 
       if (hasWalletChanged) {
-        try {
+         try {
             const response = await fetch(urlWallet, {
                method: "PATCH",
                headers: {
-                  ContentType: "application/json",
+                  "Content-Type": "application/json",
                },
             });
             if (!response.ok) {
-               response.text().then((message) => {
-                  alert("Error during wallet amount update: " + message);
-                  throw new Error(message);
-               });
+               const message = await response.text();
+               alert("Error during wallet amount update: " + message);
+               throw new Error(message);
             }
          } catch (err) {
             alert(err);
@@ -157,18 +149,17 @@ function userTable() {
       }
 
       if (hasDisplayChanged) {
-        try {
+         try {
             const response = await fetch(urlDisplay, {
                method: "PATCH",
                headers: {
-                  ContentType: "application/json",
+                  "Content-Type": "application/json",
                },
             });
             if (!response.ok) {
-               response.text().then((message) => {
-                  alert("Error during wallet amount update: " + message);
-                  throw new Error(message);
-               });
+               const message = await response.text();
+               alert("Error during display name update: " + message);
+               throw new Error(message);
             }
          } catch (err) {
             alert(err);
@@ -181,14 +172,14 @@ function userTable() {
       window.location.reload();
    };
 
-   //Converter for regular number to decimal
+   // Converter for regular number to decimal
    const currFormat = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 2,
    });
 
-   //Swtich and represent for admin (1) and normal user (0)
+   // Switch and represent for admin (1) and normal user (0)
    function userTypeSwitch() {
       if (userCreateType.localeCompare("User") === 0) {
          setUserCreateType("Admin");
@@ -201,7 +192,7 @@ function userTable() {
 
    useEffect(() => {
       fetch("https://apiz.zachklimowicz.com/users", {
-         method: "get",
+         method: "GET",
       })
          .then((response) => response.json())
          .then((data) => {
@@ -292,7 +283,7 @@ function userTable() {
                            defaultValue={value.wallet}
                            onChange={(e) => {
                               setEditUserWallet(e.target.value);
-                              setHasWalletChanged(true)
+                              setHasWalletChanged(true);
                            }}
                         />
                      ) : (
