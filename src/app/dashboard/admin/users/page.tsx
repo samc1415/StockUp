@@ -351,34 +351,3 @@ export default function UserTable() {
       </Fragment>
    );
 }
-
-export default function Users() {
-   return (
-      <>
-         <div className="flex items-center">
-            <h1 className="text-lg font-bold md:text-3xl">User Management</h1>
-         </div>
-         <div>
-            <Table className="mt-6">
-               <TableHeader>
-                  <TableRow>
-                     <TableHead className="hidden md:table-cell">ID</TableHead>
-                     <TableHead>Username</TableHead>
-                     <TableHead className="hidden md:table-cell">
-                        Display Name
-                     </TableHead>
-                     <TableHead className="hidden md:table-cell">
-                        Role
-                     </TableHead>
-                     <TableHead>Wallet</TableHead>
-                     <TableHead>
-                        <span>Actions</span>
-                     </TableHead>
-                  </TableRow>
-               </TableHeader>
-               <TableBody>{userTable()}</TableBody>
-            </Table>
-         </div>
-      </>
-   );
-}
