@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 
 export default function AccountSettings() {
-   const [tokenCookie, _, removeCookie] = useCookies(["AccessToken"]);
+   const [tokenCookie, removeCookie] = useCookies(["AccessToken"]);
    const [userCookie] = useCookies(["UserID"]);
    const [user, setUser] = useState({
       userID: "",
