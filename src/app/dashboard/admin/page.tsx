@@ -1,19 +1,9 @@
 "use client";
-
-import { Avatar } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import {
-   ChartContainer,
-   ChartTooltip,
-   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { FaArrowUpRightDots } from "react-icons/fa6";
-import { FaDollarSign } from "react-icons/fa";
+import { Area, AreaChart } from "recharts";
+import { ChartContainer } from "@/components/ui/chart";
 import { useState, useEffect, Fragment, useRef } from "react";
 import React from "react";
-import { randomInt } from "crypto";
 
 type stock = {
    stockID: string;
@@ -37,7 +27,6 @@ const currFormat = new Intl.NumberFormat("en-US", {
    currency: "USD",
    minimumFractionDigits: 2,
 });
-
 
 const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
    const [priceData, setPriceData] = useState<price[]>([]);
@@ -79,7 +68,7 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
                time: {
                   label: "Time",
                   color: "hsl(var(--chart-2))",
-               }
+               },
             }}
          >
             <AreaChart
@@ -89,8 +78,6 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
                data={priceData}
                margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
             >
-         
-              
                <defs>
                   <linearGradient id="fillTime" x1="0" y1="0" x2="0" y2="1">
                      <stop
@@ -130,12 +117,12 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
    );
 });
 
+// Add a display name for better debugging
+StockGraph.displayName = "StockGraph";
+
 export default function Dashboard() {
    const [stocks, setStocks] = useState<stock[]>([]);
    const [isLoading, setIsLoading] = useState(true);
-
-
-
 
    useEffect(() => {
       setIsLoading(true);
@@ -213,9 +200,7 @@ export default function Dashboard() {
                      <StockGraph Stock={stocks[2]} />
                   ) : null}
                </div>
-               <div className="grid gap-2 grid-cols-1 md:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-3">
-                  
-               </div>
+               <div className="grid gap-2 grid-cols-1 md:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-3"></div>
             </div>
 
             <div>
