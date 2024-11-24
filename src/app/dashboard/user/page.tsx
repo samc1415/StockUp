@@ -1,461 +1,274 @@
-"use client"
+"use client";
 
+import { Card } from "@/components/ui/card";
 import {
-  Card,
-} from "@/components/ui/card"
+   Carousel,
+   CarouselContent,
+   CarouselItem,
+   CarouselNext,
+   CarouselPrevious,
+} from "@/components/ui/carousel";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-import Rating from "@/components/custom/Rating"
-import { Separator } from "@/components/ui/separator"
+   Area,
+   AreaChart,
+   ResponsiveContainer,
+   Tooltip,
+   XAxis,
+   YAxis,
+} from "recharts";
+import { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { SiApple, SiMicrosoft, SiNetflix, SiTesla } from "react-icons/si"
+type Stock = {
+   stockID: string;
+   displayName: string;
+   displayCode: string;
+   createDate: string;
+   latestPrice: number;
+   volume: number;
+   openingPrice: number;
+};
 
-const appleChartData = [
-  { month: "January", desktop: 160, mobile: 110 },
-  { month: "February", desktop: 220, mobile: 150 },
-  { month: "March", desktop: 190, mobile: 180 },
-  { month: "April", desktop: 140, mobile: 240 },
-  { month: "May", desktop: 180, mobile: 210 },
-  { month: "June", desktop: 250, mobile: 130 },
-];
+type PriceData = {
+   stockID: string;
+   data: { date: string; price: number }[];
+};
 
-const microsoftChartData = [
-  { month: "January", desktop: 210, mobile: 95 },
-  { month: "February", desktop: 280, mobile: 170 },
-  { month: "March", desktop: 230, mobile: 140 },
-  { month: "April", desktop: 160, mobile: 190 },
-  { month: "May", desktop: 220, mobile: 165 },
-  { month: "June", desktop: 240, mobile: 150 },
-];
-
-const netflixChartData = [
-  { month: "January", desktop: 140, mobile: 170 },
-  { month: "February", desktop: 260, mobile: 210 },
-  { month: "March", desktop: 180, mobile: 160 },
-  { month: "April", desktop: 120, mobile: 230 },
-  { month: "May", desktop: 200, mobile: 190 },
-  { month: "June", desktop: 170, mobile: 220 },
-];
-
-const teslaChartData = [
-  { month: "January", desktop: 185, mobile: 140 },
-  { month: "February", desktop: 240, mobile: 190 },
-  { month: "March", desktop: 220, mobile: 160 },
-  { month: "April", desktop: 130, mobile: 220 },
-  { month: "May", desktop: 195, mobile: 200 },
-  { month: "June", desktop: 210, mobile: 180 },
-];
-
-
-const chartConfig = {
-  desktop: {
-    label: "Price",
-    color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Income",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
+type PortfolioEntry = {
+   portfolioEntryID: string;
+   userID: string;
+   stockID: string;
+   transactionID: string;
+   amount: number;
+};
 
 export default function Users() {
-  return (
-    <>
+   const [isAuthed, setIsAuthed] = useState(false);
+   const [tokenCookie] = useCookies(["AccessToken"]);
+   const [userCookie] = useCookies(["UserID"]);
+   const [portfolio, setPortfolio] = useState<PortfolioEntry[]>([]);
+   const [stocks, setStocks] = useState<Stock[]>([]);
+   const [priceData, setPriceData] = useState<PriceData[]>([]);
+   const router = useRouter();
+
+   // Check user authentication
+   useEffect(() => {
+      if (!tokenCookie.AccessToken) {
+         router.replace("/auth/login");
+      } else {
+         setIsAuthed(true);
+      }
+   }, [tokenCookie.AccessToken, router]);
+
+   const fetchPortfolio = async () => {
+      try {
+         const response = await fetch(
+            `https://apiz.zachklimowicz.com/portfolio/${userCookie.UserID}`,
+            {
+               method: "GET",
+               headers: {
+                  "Content-Type": "application/json",
+               },
+            }
+         );
+         if (!response.ok) {
+            throw new Error("Data Fetching Failed");
+         }
+         const data = await response.json();
+         setPortfolio(data);
+      } catch (error) {
+         console.error("Failed to fetch portfolio:", error);
+      }
+   };
+
+   const fetchStockDetails = async (stockID: string) => {
+      try {
+         const response = await fetch(
+            `https://apiz.zachklimowicz.com/stocks/${stockID}`
+         );
+         if (!response.ok) {
+            throw new Error(`Failed to fetch stock details for ID: ${stockID}`);
+         }
+         const stockData = await response.json();
+         setStocks((prevStocks) =>
+            prevStocks.some((stock) => stock.stockID === stockData.stockID)
+               ? prevStocks
+               : [...prevStocks, stockData]
+         );
+      } catch (error) {
+         console.error("Error fetching stock details:", error);
+      }
+   };
+
+   const fetchStockPrices = async (stockID: string) => {
+      try {
+         const response = await fetch(
+            `https://apiz.zachklimowicz.com/prices/history/${stockID}/hour`
+         );
+         if (!response.ok) {
+            throw new Error(`Failed to fetch stock price for ID: ${stockID}`);
+         }
+         const data = await response.json();
+
+         const formattedData = data.map(
+            (entry: { updateTime: string; price: number }) => ({
+               date: new Date(entry.updateTime).toLocaleTimeString(),
+               price: entry.price,
+            })
+         );
+         setPriceData((prevData) => [
+            ...prevData.filter((entry) => entry.stockID !== stockID),
+            { stockID, data: formattedData },
+         ]);
+      } catch (error) {
+         console.error("Error fetching price data:", error);
+      }
+   };
+
+   useEffect(() => {
+      if (userCookie.UserID) {
+         fetchPortfolio();
+      }
+   }, [userCookie.UserID]);
+
+   useEffect(() => {
+      portfolio.forEach((entry) => fetchStockDetails(entry.stockID));
+   }, [portfolio]);
+
+   useEffect(() => {
+      stocks.forEach((stock) => fetchStockPrices(stock.stockID));
+   }, [stocks]);
+
+   const getPriceData = (stockID: string) =>
+      priceData.find((entry) => entry.stockID === stockID)?.data || [];
+
+   if (!isAuthed) {
+      return null; // Prevent rendering until authentication is verified
+   }
+
+   console.log(getPriceData("4PLQ3MVMABYG70MDNBKEA76PNPSS4E"));
+   return (
       <div>
-        <div className="mb-10">
-          <h2 className="text-lg font-bold md:text-xl">Market Highlights</h2>
-          <Separator className="mt-2 mb-4" />
-          <Carousel
-            opts={{
-              align: "start",
-            }}
-            className="w-[90%] mx-auto"
-          >
-            <CarouselContent>
+         <div className="mb-10">
+            <h2 className="text-lg font-bold md:text-xl">Market Highlights</h2>
+            <div className="mt-2 mb-4 border-b-2"></div>
+            <Carousel opts={{ align: "start" }} className="w-[90%] mx-auto">
+               <CarouselContent>
+                  {stocks.map((stock) => (
+                     <CarouselItem
+                        key={stock.stockID}
+                        className="md:basis-1/2 lg:basis-1/3"
+                     >
+                        <Card className="px-3 py-4 shadow-none">
+                           <div className="mt-3">
+                              <p className="text-sm font-bold">
+                                 {stock.displayCode}
+                              </p>
+                              <p className="text-sm">{stock.displayName}</p>
+                           </div>
+                           <div className="mt-2 flex justify-end items-center space-x-2">
+                              {/* Calculate change */}
+                              {(() => {
+                                 const priceChange =
+                                    stock.latestPrice - stock.openingPrice;
+                                 const percentageChange = (
+                                    (priceChange / stock.openingPrice) *
+                                    100
+                                 ).toFixed(2);
+                                 const isPositive = priceChange > 0;
 
-              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
-                <div>
-                  <Card className="px-3 py-4 shadow-none">
-                    <ChartContainer config={chartConfig}>
-                      <AreaChart
-                        accessibilityLayer
-                        data={appleChartData}
-                        margin={{
-                          left: 12,
-                          right: 12,
-                        }}
-                      >
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                          dataKey="month"
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          tickFormatter={(value) => value.slice(0, 3)}
-                        />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                        <defs>
-                          <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                            <stop
-                              offset="5%"
-                              stopColor="var(--color-desktop)"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="var(--color-desktop)"
-                              stopOpacity={0.1}
-                            />
-                          </linearGradient>
-                          <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                            <stop
-                              offset="5%"
-                              stopColor="var(--color-mobile)"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="var(--color-mobile)"
-                              stopOpacity={0.1}
-                            />
-                          </linearGradient>
-                        </defs>
-                        <Area
-                          dataKey="mobile"
-                          type="natural"
-                          fill="url(#fillMobile)"
-                          fillOpacity={0.4}
-                          stroke="var(--color-mobile)"
-                          stackId="a"
-                        />
-                        <Area
-                          dataKey="desktop"
-                          type="natural"
-                          fill="url(#fillDesktop)"
-                          fillOpacity={0.4}
-                          stroke="var(--color-desktop)"
-                          stackId="a"
-                        />
-                      </AreaChart>
-                    </ChartContainer>
-                  </Card>
+                                 return (
+                                    <div
+                                       className={`text-right ${
+                                          isPositive
+                                             ? "text-green-600"
+                                             : "text-red-600"
+                                       }`}
+                                    >
+                                       <p className="text-sm">
+                                          {isPositive ? "+" : ""}
+                                          {priceChange.toFixed(2)} USD
+                                       </p>
+                                       <p className="text-sm">
+                                          {isPositive ? "+" : ""}
+                                          {percentageChange}%
+                                       </p>
+                                    </div>
+                                 );
+                              })()}
+                           </div>
+                        </Card>
+                     </CarouselItem>
+                  ))}
+               </CarouselContent>
+               <CarouselPrevious />
+               <CarouselNext />
+            </Carousel>
+         </div>
 
-                  <div className="flex items-center mt-3">
-                    <SiApple className="w-10 h-10 p-2 rounded-full mr-2 text-[#afb5b8] dark:text-white border border-[#afb5b8] dark:border-secondary dark:bg-secondary" />
-                    <div className="mr-2">
-                      <p className="text-sm font-bold">AAPL</p>
-                      <p className="text-sm">Apple Inc.</p>
-                    </div>
-                    <TrendingUp className="text-green-600 h-4 w-4" />
+         <h2 className="text-lg font-bold md:text-xl">My Stocks</h2>
+         <div className="mt-2 mb-4 border-b-2"></div>
+         <div className="grid auto-rows-min gap-10 md:grid-cols-3">
+            {stocks.map((stock) => (
+               <Card key={stock.stockID} className="p-6 flex flex-col gap-4">
+                  <div>
+                     <h3 className="text-xl font-semibold">
+                        {stock.displayCode}
+                     </h3>
+                     <p className="text-sm">{stock.displayName}</p>
                   </div>
-                </div>
-              </CarouselItem>
-              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
-                <div>
-                  <Card className="px-3 py-4 shadow-none">
-                    <ChartContainer config={chartConfig}>
-                      <AreaChart
-                        accessibilityLayer
-                        data={microsoftChartData}
-                        margin={{
-                          left: 12,
-                          right: 12,
-                        }}
-                      >
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                          dataKey="month"
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          tickFormatter={(value) => value.slice(0, 3)}
-                        />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                        <defs>
-                          <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                            <stop
-                              offset="5%"
-                              stopColor="var(--color-desktop)"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="var(--color-desktop)"
-                              stopOpacity={0.1}
-                            />
-                          </linearGradient>
-                          <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                            <stop
-                              offset="5%"
-                              stopColor="var(--color-mobile)"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="var(--color-mobile)"
-                              stopOpacity={0.1}
-                            />
-                          </linearGradient>
-                        </defs>
-                        <Area
-                          dataKey="mobile"
-                          type="natural"
-                          fill="url(#fillMobile)"
-                          fillOpacity={0.4}
-                          stroke="var(--color-mobile)"
-                          stackId="a"
-                        />
-                        <Area
-                          dataKey="desktop"
-                          type="natural"
-                          fill="url(#fillDesktop)"
-                          fillOpacity={0.4}
-                          stroke="var(--color-desktop)"
-                          stackId="a"
-                        />
-                      </AreaChart>
-                    </ChartContainer>
-                  </Card>
 
-                  <div className="flex items-center mt-3">
-                    <div className="flex justify-center items-center w-10 h-10 rounded-full bg-blue-500 text-white dark:bg-secondary p-2 mr-2">
-                      <SiMicrosoft className="w-5 h-5" />
-                    </div>
-                    <div className="mr-2">
-                      <p className="text-sm font-bold">MSFT</p>
-                      <p className="text-sm">Microsoft Inc.</p>
-                    </div>
-                    <TrendingUp className="text-green-600 h-4 w-4" />
+                  <div className="flex items-center">
+                     <div>
+                        <p className="text-sm font-bold">Current Price</p>
+                        <p className="text-sm">${stock.latestPrice}</p>
+                     </div>
                   </div>
-                </div>
-              </CarouselItem>
-              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
-                <div>
-                  <Card className="px-3 py-4 shadow-none">
-                    <ChartContainer config={chartConfig}>
-                      <AreaChart
-                        accessibilityLayer
-                        data={netflixChartData}
+                  <ResponsiveContainer width={450} height={200}>
+                     <AreaChart
+                        data={getPriceData(stock.stockID)}
+                        width={450}
+                        height={200}
                         margin={{
-                          left: 12,
-                          right: 12,
+                           top: 5,
+                           right: 0,
+                           left: 0,
+                           bottom: 5,
                         }}
-                      >
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                          dataKey="month"
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          tickFormatter={(value) => value.slice(0, 3)}
-                        />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                     >
                         <defs>
-                          <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                            <stop
-                              offset="5%"
-                              stopColor="var(--color-desktop)"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="var(--color-desktop)"
-                              stopOpacity={0.1}
-                            />
-                          </linearGradient>
-                          <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                            <stop
-                              offset="5%"
-                              stopColor="var(--color-mobile)"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="var(--color-mobile)"
-                              stopOpacity={0.1}
-                            />
-                          </linearGradient>
+                           <linearGradient
+                              id="fillTime"
+                              x1="0"
+                              y1="0"
+                              x2="0"
+                              y2="1"
+                           >
+                              <stop
+                                 offset="5%"
+                                 stopColor="var(--color-time)"
+                                 stopOpacity={0.8}
+                              />
+                              <stop
+                                 offset="95%"
+                                 stopColor="var(--color-time)"
+                                 stopOpacity={0.1}
+                              />
+                           </linearGradient>
                         </defs>
+
                         <Area
-                          dataKey="mobile"
-                          type="natural"
-                          fill="url(#fillMobile)"
-                          fillOpacity={0.4}
-                          stroke="var(--color-mobile)"
-                          stackId="a"
+                           type="natural"
+                           dataKey="price"
+                           stroke="#06402b"
+                           fill="#96d9c0"
                         />
-                        <Area
-                          dataKey="desktop"
-                          type="natural"
-                          fill="url(#fillDesktop)"
-                          fillOpacity={0.4}
-                          stroke="var(--color-desktop)"
-                          stackId="a"
-                        />
-                      </AreaChart>
-                    </ChartContainer>
-                  </Card>
-
-                  <div className="flex items-center mt-3">
-                    <SiNetflix className="w-10 h-10 rounded-full p-2 mr-2 bg-red-500 dark:bg-secondary" />
-                    <div className="mr-2">
-                      <p className="text-sm font-bold">NTFX</p>
-                      <p className="text-sm">Netflix Inc.</p>
-                    </div>
-                    <TrendingUp className="text-green-600 h-4 w-4" />
-                  </div>
-                </div>
-              </CarouselItem>
-              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
-                <div>
-                  <Card className="px-3 py-4 shadow-none">
-                    <ChartContainer config={chartConfig}>
-                      <AreaChart
-                        accessibilityLayer
-                        data={teslaChartData}
-                        margin={{
-                          left: 12,
-                          right: 12,
-                        }}
-                      >
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                          dataKey="month"
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          tickFormatter={(value) => value.slice(0, 3)}
-                        />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                        <defs>
-                          <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                            <stop
-                              offset="5%"
-                              stopColor="var(--color-desktop)"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="var(--color-desktop)"
-                              stopOpacity={0.1}
-                            />
-                          </linearGradient>
-                          <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                            <stop
-                              offset="5%"
-                              stopColor="var(--color-mobile)"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="var(--color-mobile)"
-                              stopOpacity={0.1}
-                            />
-                          </linearGradient>
-                        </defs>
-                        <Area
-                          dataKey="mobile"
-                          type="natural"
-                          fill="url(#fillMobile)"
-                          fillOpacity={0.4}
-                          stroke="var(--color-mobile)"
-                          stackId="a"
-                        />
-                        <Area
-                          dataKey="desktop"
-                          type="natural"
-                          fill="url(#fillDesktop)"
-                          fillOpacity={0.4}
-                          stroke="var(--color-desktop)"
-                          stackId="a"
-                        />
-                      </AreaChart>
-                    </ChartContainer>
-                  </Card>
-
-                  <div className="flex items-center mt-3">
-                    <SiTesla className="w-10 h-10 rounded-full p-2 mr-2 bg-red-700 text-white dark:bg-secondary" />
-                    <div className="mr-2">
-                      <p className="text-sm font-bold">TSLA</p>
-                      <p className="text-sm">Tesla Inc.</p>
-                    </div>
-                    <TrendingUp className="text-green-600 h-4 w-4" />
-                  </div>
-                </div>
-              </CarouselItem>
-
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-
-        </div>
-
-        <div>
-          <Separator className="mt-4 mb-6" />
-          <div className="grid auto-rows-min gap-10 md:grid-cols-3">
-            <Card className="p-6 flex flex-col gap-4">
-              <Rating rating={4} />
-              <div>
-                <h3 className="text-xl font-semibold">AAPL</h3>
-                <p className="text-sm">Applec Inc.</p>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-gray-300 mr-2"></div>
-                <div>
-                  <p className="text-sm font-bold">Current Price</p>
-                  <p className="text-sm">$150.25</p>
-                </div>
-              </div>
-            </Card>
-            <Card className="p-6 flex flex-col gap-4">
-              <Rating rating={4} />
-              <div>
-                <h3 className="text-xl font-semibold">TSLA</h3>
-                <p className="text-sm">Tesla Inc.</p>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-gray-300 mr-2"></div>
-                <div>
-                  <p className="text-sm font-bold">Current Price</p>
-                  <p className="text-sm">$700.50</p>
-                </div>
-              </div>
-            </Card>
-            <Card className="p-6 flex flex-col gap-4">
-              <Rating rating={3} />
-              <div>
-                <h3 className="text-xl font-semibold">AMZN</h3>
-                <p className="text-sm">Amazon Inc.</p>
-              </div>
-
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-gray-300 mr-2"></div>
-                <div>
-                  <p className="text-sm font-bold">Current Price</p>
-                  <p className="text-sm">$3,150.00</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
+                     </AreaChart>
+                  </ResponsiveContainer>
+               </Card>
+            ))}
+         </div>
       </div>
-
-    </>
-  )
+   );
 }
