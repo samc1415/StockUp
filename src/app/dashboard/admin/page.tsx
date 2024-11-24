@@ -1,19 +1,10 @@
 "use client";
 
-import { Avatar } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState, Fragment, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import {
-   ChartContainer,
-   ChartTooltip,
-   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { FaArrowUpRightDots } from "react-icons/fa6";
-import { FaDollarSign } from "react-icons/fa";
-import { useState, useEffect, Fragment, useRef } from "react";
-import React from "react";
-import { randomInt } from "crypto";
+import { Area, AreaChart } from "recharts";
+import { ChartContainer } from "@/components/ui/chart";
+import { useCookies } from "react-cookie";
 
 type stock = {
    stockID: string;
@@ -38,7 +29,6 @@ const currFormat = new Intl.NumberFormat("en-US", {
    minimumFractionDigits: 2,
 });
 
-
 const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
    const [priceData, setPriceData] = useState<price[]>([]);
    const hasFetched = useRef(false);
@@ -50,7 +40,7 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
       fetch(url)
          .then((response) => response.json())
          .then((data) => {
-            const formattedData = data.map((entry: any) => ({
+            const formattedData = data.map((entry: price) => ({
                date: entry.updateTime,
                time: entry.price,
             }));
@@ -89,8 +79,6 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
                data={priceData}
                margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
             >
-         
-              
                <defs>
                   <linearGradient id="fillTime" x1="0" y1="0" x2="0" y2="1">
                      <stop
@@ -130,12 +118,11 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
    );
 });
 
+StockGraph.displayName = "StockGraph"; // Adding display name
+
 export default function Dashboard() {
    const [stocks, setStocks] = useState<stock[]>([]);
    const [isLoading, setIsLoading] = useState(true);
-
-
-
 
    useEffect(() => {
       setIsLoading(true);
