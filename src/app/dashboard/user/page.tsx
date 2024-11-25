@@ -5,13 +5,17 @@ import {
    Area,
    AreaChart,
    ResponsiveContainer,
-   Tooltip,
-   XAxis,
-   YAxis,
 } from "recharts";
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
+import {
+   Carousel,
+   CarouselContent,
+   CarouselItem,
+   CarouselNext,
+   CarouselPrevious,
+} from "@/components/ui/carousel";
 
 type Stock = {
    stockID: string;

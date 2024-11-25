@@ -1,16 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
-=======
-import { Input } from "@/components/ui/input";
->>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
+import { Label } from "@/components/ui/label";
 import {
    DropdownMenu,
    DropdownMenuContent,
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
    Table,
    TableBody,
@@ -22,9 +20,8 @@ import {
 import { Fragment, useState, useEffect } from "react";
 import { MoreHorizontal } from "lucide-react";
 
-<<<<<<< HEAD
-// StockTable component
 function StockTable() {
+   // Updated function name to uppercase
    type Stock = {
       stockID: string;
       displayName: string;
@@ -35,19 +32,6 @@ function StockTable() {
    };
 
    const [data, setData] = useState<Stock[]>();
-=======
-type Stock = {
-   stockID: string;
-   displayName: string;
-   displayCode: string;
-   createDate: string;
-   latestPrice: number;
-   volume: number;
-};
-
-export default function StockTable() {
-   const [data, setData] = useState<Stock[]>([]);
->>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
    const [isLoading, setIsLoading] = useState(true);
    const [isEdit, setIsEdit] = useState(false);
 
@@ -65,28 +49,37 @@ export default function StockTable() {
       minimumFractionDigits: 2,
    });
 
-<<<<<<< HEAD
-   const saveStock = async (stockID: String, event: any) => {
-=======
-   const saveStock = async (stockID: string, event: React.FormEvent) => {
->>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
+   const saveStock = async (stockID: string, event: any) => {
       event.preventDefault();
-      const urlDisplayName = `https://apiz.zachklimowicz.com/stock/${stockID}/name?newName=${stockDisplayName}`;
-      const urlDisplayCode = `https://apiz.zachklimowicz.com/stock/${stockID}/code?newCode=${stockDisplayTick}`;
-      const urlStockPrice = `https://apiz.zachklimowicz.com/stock/${stockID}/price?newPrice=${stockCurrentPrice}`;
+      let urlDisplayName =
+         "https://apiz.zachklimowicz.com/stock/" +
+         stockID +
+         "/name?newName=" +
+         stockDisplayName;
+      let urlDisplayCode =
+         "https://apiz.zachklimowicz.com/stock/" +
+         stockID +
+         "/code?newCode=" +
+         stockDisplayTick;
+      let urlStockPrice =
+         "https://apiz.zachklimowicz.com/stock/" +
+         stockID +
+         "/price?newPrice=" +
+         stockCurrentPrice;
 
       if (isDisplayChange) {
          try {
             const response = await fetch(urlDisplayName, {
                method: "PATCH",
                headers: {
-                  "Content-Type": "application/json",
+                  ContentType: "application/json",
                },
             });
             if (!response.ok) {
-               const message = await response.text();
-               alert("Error during display name update: " + message);
-               throw new Error(message);
+               response.text().then((message) => {
+                  alert("Error during display name update: " + message);
+                  throw new Error(message);
+               });
             }
          } catch (err) {
             alert(err);
@@ -100,13 +93,14 @@ export default function StockTable() {
             const response = await fetch(urlDisplayCode, {
                method: "PATCH",
                headers: {
-                  "Content-Type": "application/json",
+                  ContentType: "application/json",
                },
             });
             if (!response.ok) {
-               const message = await response.text();
-               alert("Error during ticker update: " + message);
-               throw new Error(message);
+               response.text().then((message) => {
+                  alert("Error during ticker update: " + message);
+                  throw new Error(message);
+               });
             }
          } catch (err) {
             alert(err);
@@ -120,54 +114,46 @@ export default function StockTable() {
             const response = await fetch(urlStockPrice, {
                method: "PATCH",
                headers: {
-                  "Content-Type": "application/json",
+                  ContentType: "application/json",
                },
             });
             if (!response.ok) {
-               const message = await response.text();
-               alert("Error during pricing update: " + message);
-               throw new Error(message);
+               response.text().then((message) => {
+                  alert("Error during pricing update: " + message);
+                  throw new Error(message);
+               });
             }
          } catch (err) {
             alert(err);
             console.error(err);
          }
-         setIsPriceChanged(false);
+         setIsDisplayChanged(false);
       }
       setIsEdit(false);
       window.location.reload();
    };
 
-<<<<<<< HEAD
-   const deleteStock = async (stockID: String, event: any) => {
+   const deleteStock = async (stockID: string, event: any) => {
       if (
          confirm(
             "Are you sure you want to delete the stock? This cannot be undone."
          )
       ) {
-         const url = "https://apiz.zachklimowicz.com/stocks/delete/" + stockID;
-=======
-   const deleteStock = async (stockID: string) => {
-      if (confirm("Are you sure you want to delete the stock? This cannot be undone.")) {
-         const url = `https://apiz.zachklimowicz.com/stocks/delete/${stockID}`;
->>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
+         let url = "https://apiz.zachklimowicz.com/stocks/delete/" + stockID;
          try {
             const response = await fetch(url, {
                method: "DELETE",
             });
 
             if (!response.ok) {
-               const message = await response.text();
-               alert(message);
-               console.log(message);
+               response.text().then((message) => {
+                  alert(message);
+                  console.log(message);
+               });
             } else {
-<<<<<<< HEAD
                alert("Stock " + stockID + " deleted successfully.");
-=======
-               alert("User " + stockID + " deleted successfully.");
-               window.location.reload();
->>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
             }
+            window.location.reload();
          } catch (err) {
             alert("Stock delete failed");
             console.error(err);
@@ -197,7 +183,7 @@ export default function StockTable() {
    if (!data) return <span>Data Loading Failed, please refresh the page.</span>;
 
    return (
-      <Fragment key="stockTable">
+      <>
          {data.map((stock) => (
             <TableRow key={stock.stockID}>
                <TableCell className="table-cell">
@@ -256,7 +242,7 @@ export default function StockTable() {
                      <DropdownMenuContent align="end">
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={() => {
+                           onClick={(e) => {
                               setIsEdit(true);
                            }}
                         >
@@ -264,8 +250,8 @@ export default function StockTable() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={() => {
-                              deleteStock(stock.stockID);
+                           onClick={(e) => {
+                              deleteStock(stock.stockID, e);
                            }}
                         >
                            Delete
@@ -281,7 +267,7 @@ export default function StockTable() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={() => {
+                           onClick={(e) => {
                               setIsEdit(false);
                            }}
                         >
@@ -292,46 +278,95 @@ export default function StockTable() {
                </DropdownMenu>
             </TableRow>
          ))}
-      </Fragment>
+      </>
    );
 }
 
-<<<<<<< HEAD
-// Main Stocks component
-=======
-
->>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
 export default function Stocks() {
+   const [name, setName] = useState("");
+   const [ticker, setTicker] = useState("");
+   const [vol, setVol] = useState("");
+   const [price, setPrice] = useState("");
+
+   const onStockCreate = async (event: any) => {
+      event.preventDefault();
+
+      await fetch("https://apiz.zachklimowicz.com/stocks/new", {
+         method: "POST",
+         headers: {
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+            DisplayName: name,
+            DisplayCode: ticker,
+            StartingPrice: price,
+            Volume: vol,
+         }),
+      }).then(() => {
+         alert("Stock added");
+         window.location.reload();
+      });
+   };
+
    return (
       <>
-         <div className="flex items-center">
-            <h1 className="text-lg font-bold md:text-3xl">Stock Manager</h1>
-         </div>
-         <div className="w-full lg:grid lg:grid-cols-2 gap-[10%] mb-3">
-            <div className="mt-10 md:mt-0">{/* Create New Stocks */}</div>
-            <div>
-               <h1 className="text-xl font-bold mb-1">Manage Stocks</h1>
-               <Table className="mt-6">
-                  <TableHeader>
-                     <TableRow>
-                        <TableHead>Company Name</TableHead>
-                        <TableHead className="hidden md:table-cell">
-                           Ticker
-                        </TableHead>
-                        <TableHead className="hidden md:table-cell">
-                           Last Price
-                        </TableHead>
-                        <TableHead>
-                           <span>Actions</span>
-                        </TableHead>
-                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                     <StockTable />
-                  </TableBody>
-               </Table>
+         <form
+            onSubmit={(e) => {
+               onStockCreate(e);
+            }}
+         >
+            <div className="space-y-3">
+               <Label htmlFor="stock-name">Stock Name</Label>
+               <Input
+                  type="text"
+                  id="stock-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+               />
             </div>
-         </div>
+            <div className="space-y-3">
+               <Label htmlFor="stock-ticker">Stock Ticker</Label>
+               <Input
+                  type="text"
+                  id="stock-ticker"
+                  value={ticker}
+                  onChange={(e) => setTicker(e.target.value)}
+               />
+            </div>
+            <div className="space-y-3">
+               <Label htmlFor="stock-price">Stock Price</Label>
+               <Input
+                  type="text"
+                  id="stock-price"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+               />
+            </div>
+            <div className="space-y-3">
+               <Label htmlFor="stock-vol">Stock Volume</Label>
+               <Input
+                  type="text"
+                  id="stock-vol"
+                  value={vol}
+                  onChange={(e) => setVol(e.target.value)}
+               />
+            </div>
+            <Button type="submit">Create Stock</Button>
+         </form>
+
+         <Table>
+            <TableHeader>
+               <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Ticker</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Actions</TableHead>
+               </TableRow>
+            </TableHeader>
+            <TableBody>
+               <StockTable />
+            </TableBody>
+         </Table>
       </>
    );
 }
