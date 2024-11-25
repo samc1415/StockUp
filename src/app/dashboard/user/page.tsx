@@ -1,11 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import {
-   Area,
-   AreaChart,
-   ResponsiveContainer,
-} from "recharts";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
@@ -79,22 +75,16 @@ export default function Users() {
       }
    };
 
-   const fetchStockDetails = async (stockID: string) => {
+   const fetchAllStocks = async () => {
       try {
-         const response = await fetch(
-            `https://apiz.zachklimowicz.com/stocks/${stockID}`
-         );
+         const response = await fetch(`https://apiz.zachklimowicz.com/stocks/`);
          if (!response.ok) {
-            throw new Error(`Failed to fetch stock details for ID: ${stockID}`);
+            throw new Error("Failed to fetch all stocks");
          }
-         const stockData = await response.json();
-         setStocks((prevStocks) =>
-            prevStocks.some((stock) => stock.stockID === stockData.stockID)
-               ? prevStocks
-               : [...prevStocks, stockData]
-         );
+         const data = await response.json();
+         setStocks(data); // Set all stocks data
       } catch (error) {
-         console.error("Error fetching stock details:", error);
+         console.error("Error fetching all stocks:", error);
       }
    };
 
@@ -125,13 +115,10 @@ export default function Users() {
 
    useEffect(() => {
       if (userCookie.UserID) {
-         fetchPortfolio();
+         fetchPortfolio(); // Fetch user's portfolio
+         fetchAllStocks(); // Fetch all stocks
       }
    }, [userCookie.UserID]);
-
-   useEffect(() => {
-      portfolio.forEach((entry) => fetchStockDetails(entry.stockID));
-   }, [portfolio]);
 
    useEffect(() => {
       stocks.forEach((stock) => fetchStockPrices(stock.stockID));
@@ -140,11 +127,25 @@ export default function Users() {
    const getPriceData = (stockID: string) =>
       priceData.find((entry) => entry.stockID === stockID)?.data || [];
 
+   const calculateDailyHighLow = (stockID: string) => {
+      const prices = getPriceData(stockID);
+      if (!prices.length) return { high: 0, low: 0 };
+
+      const pricesArray = prices.map((entry) => entry.price);
+      const high = Math.max(...pricesArray);
+      const low = Math.min(...pricesArray);
+      return { high, low };
+   };
+
    if (!isAuthed) {
       return null; // Prevent rendering until authentication is verified
    }
 
-   console.log(getPriceData("4PLQ3MVMABYG70MDNBKEA76PNPSS4E"));
+   // Filter stocks that are in the user's portfolio for "My Stocks" section
+   const portfolioStocks = stocks.filter((stock) =>
+      portfolio.some((entry) => entry.stockID === stock.stockID)
+   );
+
    return (
       <div>
          <div className="mb-10">
@@ -152,52 +153,61 @@ export default function Users() {
             <div className="mt-2 mb-4 border-b-2"></div>
             <Carousel opts={{ align: "start" }} className="w-[90%] mx-auto">
                <CarouselContent>
-                  {stocks.map((stock) => (
-                     <CarouselItem
-                        key={stock.stockID}
-                        className="md:basis-1/2 lg:basis-1/3"
-                     >
-                        <Card className="px-3 py-4 shadow-none">
-                           <div className="mt-3">
-                              <p className="text-sm font-bold">
-                                 {stock.displayCode}
-                              </p>
-                              <p className="text-sm">{stock.displayName}</p>
-                           </div>
-                           <div className="mt-2 flex justify-end items-center space-x-2">
-                              {/* Calculate change */}
-                              {(() => {
-                                 const priceChange =
-                                    stock.latestPrice - stock.openingPrice;
-                                 const percentageChange = (
-                                    (priceChange / stock.openingPrice) *
-                                    100
-                                 ).toFixed(2);
-                                 const isPositive = priceChange > 0;
+                  {stocks.map((stock) => {
+                     const { high, low } = calculateDailyHighLow(stock.stockID);
+                     const priceChange = stock.latestPrice - stock.openingPrice;
+                     const percentageChange = (
+                        (priceChange / stock.openingPrice) *
+                        100
+                     ).toFixed(2);
+                     const isPositive = priceChange > 0;
 
-                                 return (
-                                    <div
-                                       className={`text-right ${
-                                          isPositive
-                                             ? "text-green-600"
-                                             : "text-red-600"
-                                       }`}
-                                    >
-                                       <p className="text-sm">
-                                          {isPositive ? "+" : ""}
-                                          {priceChange.toFixed(2)} USD
-                                       </p>
-                                       <p className="text-sm">
-                                          {isPositive ? "+" : ""}
-                                          {percentageChange}%
-                                       </p>
-                                    </div>
-                                 );
-                              })()}
-                           </div>
-                        </Card>
-                     </CarouselItem>
-                  ))}
+                     return (
+                        <CarouselItem
+                           key={stock.stockID}
+                           className="md:basis-1/2 lg:basis-1/3"
+                        >
+                           <Card className="px-3 py-4 shadow-none">
+                              <div className="mt-3 flex justify-between items-center">
+                                 <div>
+                                    <p className="text-2xl font-bold">
+                                       {stock.displayCode}
+                                    </p>
+                                    <p className="text-sm">
+                                       {stock.displayName}
+                                    </p>
+                                 </div>
+                                 <div className="text-right">
+                                    <p className="text-sm">Latest Price</p>
+                                    <p className="text-sm">
+                                       ${stock.latestPrice}
+                                    </p>
+                                    <p className="text-sm">High: ${high}</p>
+                                    <p className="text-sm">Low: ${low}</p>
+                                 </div>
+                              </div>
+                              <div className="mt-2 flex justify-end items-center space-x-2">
+                                 <div
+                                    className={`text-right ${
+                                       isPositive
+                                          ? "text-green-600"
+                                          : "text-red-600"
+                                    }`}
+                                 >
+                                    <p className="text-sm">
+                                       {isPositive ? "+" : ""}
+                                       {priceChange.toFixed(2)} USD
+                                    </p>
+                                    <p className="text-sm">
+                                       {isPositive ? "+" : ""}
+                                       {percentageChange}%
+                                    </p>
+                                 </div>
+                              </div>
+                           </Card>
+                        </CarouselItem>
+                     );
+                  })}
                </CarouselContent>
                <CarouselPrevious />
                <CarouselNext />
@@ -207,7 +217,7 @@ export default function Users() {
          <h2 className="text-lg font-bold md:text-xl">My Stocks</h2>
          <div className="mt-2 mb-4 border-b-2"></div>
          <div className="grid auto-rows-min gap-10 md:grid-cols-3">
-            {stocks.map((stock) => (
+            {portfolioStocks.map((stock) => (
                <Card key={stock.stockID} className="p-6 flex flex-col gap-4">
                   <div>
                      <h3 className="text-xl font-semibold">

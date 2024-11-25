@@ -51,8 +51,6 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
 
    if (priceData.length === 0) return <p>Loading data...</p>;
 
-   console.log(priceData);
-
    return (
       <Card className="bg-[#eaf1f3] border-none shadow-none dark:bg-gray-900">
          <CardHeader className="flex flex-row p-[7px] mb-[-17px] gap-2 items-center">
