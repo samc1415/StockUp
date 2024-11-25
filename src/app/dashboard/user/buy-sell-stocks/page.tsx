@@ -45,6 +45,31 @@ export default function BuySellStocks() {
    const [isAmountConfirmed, setIsAmountConfirmed] = useState(false);
    const [confirmationTime, setConfirmationTime] = useState(60);
 
+   const [user, setUser] = useState({
+      userID: "",
+      userType: "",
+      username: "",
+      displayName: "",
+      wallet: 0,
+      startingWallet: 0,
+   });
+
+   const fetchUserData = async () => {
+      const url = "https://apiz.zachklimowicz.com/users/" + userCookie.UserID;
+      try {
+         const response = await fetch(url, {
+            method: "GET",
+            headers: {
+               "Content-Type": "application/json",
+            },
+         });
+         const data = await response.json();
+         setUser(data);
+      } catch (error) {
+         console.error("Failed to fetch user data:", error);
+      }
+   };
+
    // Fetch stock list from API
    const fetchStocks = async () => {
       try {
@@ -113,24 +138,37 @@ export default function BuySellStocks() {
          userID: userCookie.UserID,
       };
 
-      try {
-         const response = await fetch(
-            `https://apiz.zachklimowicz.com/transactions/${transactionAction}`,
-            {
-               method: "POST",
-               headers: {
-                  "Content-Type": "application/json",
-               },
-               body: JSON.stringify(transactionData),
+      if (
+         transactionData.salePrice * transactionData.quantity > user.wallet &&
+         transactionData.action === "buy"
+      ) {
+         alert("Not enough money to cover this transaction.");
+      } else {
+         try {
+            const response = await fetch(
+               `https://apiz.zachklimowicz.com/transactions/${transactionAction}`,
+               {
+                  method: "POST",
+                  headers: {
+                     "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(transactionData),
+               }
+            );
+            if (!response.ok) {
+               alert("Not enough stock in portfolio to cover this transaction.")
+            } else {
+               alert(
+                  `Transaction ${transactionAction} completed successfully!`
+               );
             }
-         );
-         if (!response.ok) throw new Error("Transaction failed.");
-         alert(`Transaction ${transactionAction} completed successfully!`);
-      } catch (error) {
-         console.error(`Error completing transaction:`, error);
-      } finally {
-         setShowModal(false);
-         resetConfirmation();
+         } catch (error) {
+            alert(error);
+            console.error(`Error completing transaction:`, error);
+         } finally {
+            setShowModal(false);
+            resetConfirmation();
+         }
       }
    };
 
@@ -141,6 +179,7 @@ export default function BuySellStocks() {
 
    useEffect(() => {
       fetchStocks();
+      fetchUserData();
    }, []);
 
    useEffect(() => {

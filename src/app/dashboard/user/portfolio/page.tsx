@@ -297,7 +297,7 @@ export default function BuySellStocks() {
           </div>
           <div className="flex flex-col gap-1">
             <h2 className="font-bold">Cash Balance</h2>
-            <p className="text-sm">${user.wallet}</p>
+            <p className="text-sm">${user.wallet.toFixed(2)}</p>
           </div>
         </div>
       </div>
