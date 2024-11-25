@@ -37,9 +37,7 @@ export default function DashboardLayout({
 }) {
    const pathname = usePathname();
 
-   const [isAuthed,setIsAuthed] = useState(false);
-   const [tokenCookie, setTokenCookie] = useCookies(["AccessToken"]);
-   const [userCookie, setUserCookie] = useCookies(["UserID"]);
+   const [userCookie] = useCookies(["UserID"]);
    const [user, setUser] = useState({
       userID: "",
       userType: "",
@@ -48,8 +46,9 @@ export default function DashboardLayout({
       wallet: 0,
       startingWallet: 0,
    });
+
    useEffect(() => {
-      let url = "https://apiz.zachklimowicz.com/users/" + userCookie.UserID;
+      const url = "https://apiz.zachklimowicz.com/users/" + userCookie.UserID;
       fetch(url, {
          method: "GET",
          headers: {
@@ -60,7 +59,7 @@ export default function DashboardLayout({
          .then((data) => {
             setUser(data);
          });
-   }, []);
+   }, [userCookie.UserID]);
 
    return (
       <ThemeProvider

@@ -13,9 +13,7 @@ import { useRouter } from "next/navigation";
 export default function CardWithForm() {
    const router = useRouter();
    const [inputAmount, setInputAmount] = useState(0);
-   const [isAuthed, setIsAuthed] = useState(false);
-   const [tokenCookie, setTokenCookie] = useCookies(["AccessToken"]);
-   const [userCookie, setUserCookie] = useCookies(["UserID"]);
+   const [userCookie] = useCookies(["UserID"]);
    const [user, setUser] = useState({
       userID: "",
       userType: "",
@@ -26,7 +24,7 @@ export default function CardWithForm() {
    });
 
    useEffect(() => {
-      let url = "https://apiz.zachklimowicz.com/users/" + userCookie.UserID;
+      const url = "https://apiz.zachklimowicz.com/users/" + userCookie.UserID;
       fetch(url, {
          method: "GET",
          headers: {
@@ -41,14 +39,10 @@ export default function CardWithForm() {
 
    const userWithdraw = async () => {
       if (inputAmount < 0) {
-         alert("Unable to deposit negative amounts.");
+         alert("Unable to withdraw negative amounts.");
       } else {
-         let newWallet = user.wallet + inputAmount;
-         let url =
-            "https://apiz.zachklimowicz.com/users/" +
-            user.userID +
-            "/wallet?newAmount=" +
-            newWallet;
+         const newWallet = user.wallet - inputAmount;
+         const url = `https://apiz.zachklimowicz.com/users/${user.userID}/wallet?newAmount=${newWallet}`;
          await fetch(url, {
             method: "PATCH",
             headers: {
@@ -56,9 +50,14 @@ export default function CardWithForm() {
             },
          }).then((response) => {
             if (!response.ok) {
-               console.error("Error during deposit: " + response.statusText);
+               console.error("Error during withdrawal: " + response.statusText);
             } else {
-               alert("Amount deposited successfully.");
+               alert("Amount withdrawn successfully.");
+               setUser((prevUser) => ({
+                  ...prevUser,
+                  wallet: newWallet,
+               }));
+               setInputAmount(0); // Reset input amount
             }
          });
       }
@@ -85,13 +84,14 @@ export default function CardWithForm() {
                            type="number"
                            id="name"
                            placeholder="$"
+                           value={inputAmount}
                            onChange={(e) =>
                               setInputAmount(parseFloat(e.target.value))
                            }
                         />
                      </div>
                      <p className="text-sm">
-                        Current Amount: ${currFormat.format(user.wallet)}
+                        Current Amount: {currFormat.format(user.wallet)}
                      </p>
                   </div>
                </form>
@@ -99,14 +99,14 @@ export default function CardWithForm() {
             <CardFooter className="flex justify-between gap-8">
                <Button
                   className="w-full bg-[#2e3327] dark:bg-primary dark:hover:bg-primary/90 hover:bg-[#393d32]"
-                  onClick={(e) => userWithdraw()}
+                  onClick={userWithdraw}
                >
                   Withdraw
                </Button>
                <Button
                   variant="secondary"
                   className="w-full bg-gray-200/70 dark:bg-secondary dark:hover:bg-secondary/80"
-                  onClick={(e) => router.push("/dashboard/user")} // Ensure this is within a client-side environment
+                  onClick={() => router.push("/dashboard/user")}
                >
                   Cancel
                </Button>
@@ -114,12 +114,10 @@ export default function CardWithForm() {
          </Card>
          <Separator />
          <div>
-            <h2 className="text-lg font-semibold md:text-lg">
-               Transaction Details
-            </h2>
+            <h2 className="text-lg font-semibold md:text-lg">Transaction Details</h2>
             <p className="text-sm">
-               Please confirm the amount you wish to deposit. The amount will be
-               added to your current balance immediately
+               Please confirm the amount you wish to withdraw. The amount will be
+               deducted from your current balance immediately.
             </p>
          </div>
       </>

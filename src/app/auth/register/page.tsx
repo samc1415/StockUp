@@ -23,7 +23,7 @@ const RegisterPage = () => {
    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      let displayName = firstName + " " + lastName;
+      const displayName = firstName + " " + lastName;
 
       fetch("https://apiz.zachklimowicz.com/users/new", {
          method: "POST",

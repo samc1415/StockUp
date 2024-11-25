@@ -4,27 +4,21 @@ import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ThemeProvider } from "@/components/theme-provider";
-
 import {
    ChartArea,
    CircleUser,
    Download,
    Home,
-   Menu,
    Package,
    Upload,
-   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
    DropdownMenu,
    DropdownMenuContent,
    DropdownMenuItem,
-   DropdownMenuLabel,
-   DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "@/components/ui/modeToggle";
 import { SiStockx } from "react-icons/si";
 import { useCookies } from "react-cookie";

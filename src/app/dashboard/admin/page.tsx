@@ -39,7 +39,7 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
       fetch(url)
          .then((response) => response.json())
          .then((data) => {
-            const formattedData = data.map((entry: any) => ({
+            const formattedData = data.map((entry: price) => ({
                date: entry.updateTime,
                time: entry.price,
             }));
@@ -117,7 +117,7 @@ const StockGraph = React.memo(({ Stock }: { Stock: stock }) => {
    );
 });
 
-// Add a display name for better debugging
+
 StockGraph.displayName = "StockGraph";
 
 export default function Dashboard() {

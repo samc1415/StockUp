@@ -1,6 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import {
    Table,
    TableBody,
@@ -33,9 +32,7 @@ type Stock = {
 };
 
 export default function TransactionHistory() {
-   const [isAuthed, setIsAuthed] = useState(false);
-   const [tokenCookie, setTokenCookie] = useCookies(["AccessToken"]);
-   const [userCookie, setUserCookie] = useCookies(["UserID"]);
+   const [userCookie] = useCookies(["UserID"]);
    const [user, setUser] = useState({
       userID: "",
       userType: "",
@@ -138,7 +135,7 @@ export default function TransactionHistory() {
                   </TableRow>
                </TableHeader>
                <TableBody>
-                  {transactionData.map((txn, index) => {
+                  {transactionData.map((txn) => {
                      const stock = stockData.find(
                         (s) => s.stockID === txn.targetStock
                      );

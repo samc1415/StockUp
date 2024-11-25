@@ -13,9 +13,7 @@ import { useRouter } from "next/navigation";
 export default function CardWithForm() {
    const router = useRouter();
    const [inputAmount, setInputAmount] = useState(0);
-   const [isAuthed, setIsAuthed] = useState(false);
-   const [tokenCookie, setTokenCookie] = useCookies(["AccessToken"]);
-   const [userCookie, setUserCookie] = useCookies(["UserID"]);
+   const [userCookie] = useCookies(["UserID"]);
    const [user, setUser] = useState({
       userID: "",
       userType: "",
@@ -51,8 +49,8 @@ export default function CardWithForm() {
       if (inputAmount > 100000000 || inputAmount < 0) {
          alert("Unable to complete transaction: Number must be larger than zero and less than $100,000,000");
       } else {
-         let newWallet = user.wallet + inputAmount;
-         let url =
+         const newWallet = user.wallet + inputAmount;
+         const url =
             "https://apiz.zachklimowicz.com/users/" +
             user.userID +
             "/wallet?newAmount=" +
@@ -114,7 +112,7 @@ export default function CardWithForm() {
                <Button
                   variant="secondary"
                   className="w-full bg-gray-200/70 dark:bg-secondary dark:hover:bg-secondary/80"
-                  onClick={(e) => router.push("/dashboard/user")}
+                  onClick={() => router.push("/dashboard/user")}
                >
                   Cancel
                </Button>

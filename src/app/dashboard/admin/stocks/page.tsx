@@ -1,13 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+<<<<<<< HEAD
+=======
+import { Input } from "@/components/ui/input";
+>>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
 import {
    DropdownMenu,
    DropdownMenuContent,
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
    Table,
    TableBody,
@@ -19,6 +22,7 @@ import {
 import { Fragment, useState, useEffect } from "react";
 import { MoreHorizontal } from "lucide-react";
 
+<<<<<<< HEAD
 // StockTable component
 function StockTable() {
    type Stock = {
@@ -31,12 +35,25 @@ function StockTable() {
    };
 
    const [data, setData] = useState<Stock[]>();
+=======
+type Stock = {
+   stockID: string;
+   displayName: string;
+   displayCode: string;
+   createDate: string;
+   latestPrice: number;
+   volume: number;
+};
+
+export default function StockTable() {
+   const [data, setData] = useState<Stock[]>([]);
+>>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
    const [isLoading, setIsLoading] = useState(true);
    const [isEdit, setIsEdit] = useState(false);
 
-   const [stockDisplayName, setStockDisplayName] = useState(String);
-   const [stockDisplayTick, setStockDisplayTick] = useState(String);
-   const [stockCurrentPrice, setStockCurrentPrice] = useState(String);
+   const [stockDisplayName, setStockDisplayName] = useState<string>("");
+   const [stockDisplayTick, setStockDisplayTick] = useState<string>("");
+   const [stockCurrentPrice, setStockCurrentPrice] = useState<string>("");
 
    const [isDisplayChange, setIsDisplayChanged] = useState(false);
    const [isTickerChange, setIsTickerChanged] = useState(false);
@@ -48,30 +65,22 @@ function StockTable() {
       minimumFractionDigits: 2,
    });
 
+<<<<<<< HEAD
    const saveStock = async (stockID: String, event: any) => {
+=======
+   const saveStock = async (stockID: string, event: React.FormEvent) => {
+>>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
       event.preventDefault();
-      let urlDisplayName =
-         "https://apiz.zachklimowicz.com/stock/" +
-         stockID +
-         "/name?newName=" +
-         stockDisplayName;
-      let urlDisplayCode =
-         "https://apiz.zachklimowicz.com/stock/" +
-         stockID +
-         "/code?newCode=" +
-         stockDisplayTick;
-      let urlStockPrice =
-         "https://apiz.zachklimowicz.com/stock/" +
-         stockID +
-         "/price?newPrice=" +
-         stockCurrentPrice;
+      const urlDisplayName = `https://apiz.zachklimowicz.com/stock/${stockID}/name?newName=${stockDisplayName}`;
+      const urlDisplayCode = `https://apiz.zachklimowicz.com/stock/${stockID}/code?newCode=${stockDisplayTick}`;
+      const urlStockPrice = `https://apiz.zachklimowicz.com/stock/${stockID}/price?newPrice=${stockCurrentPrice}`;
 
       if (isDisplayChange) {
          try {
             const response = await fetch(urlDisplayName, {
                method: "PATCH",
                headers: {
-                  ContentType: "application/json",
+                  "Content-Type": "application/json",
                },
             });
             if (!response.ok) {
@@ -91,7 +100,7 @@ function StockTable() {
             const response = await fetch(urlDisplayCode, {
                method: "PATCH",
                headers: {
-                  ContentType: "application/json",
+                  "Content-Type": "application/json",
                },
             });
             if (!response.ok) {
@@ -111,7 +120,7 @@ function StockTable() {
             const response = await fetch(urlStockPrice, {
                method: "PATCH",
                headers: {
-                  ContentType: "application/json",
+                  "Content-Type": "application/json",
                },
             });
             if (!response.ok) {
@@ -129,6 +138,7 @@ function StockTable() {
       window.location.reload();
    };
 
+<<<<<<< HEAD
    const deleteStock = async (stockID: String, event: any) => {
       if (
          confirm(
@@ -136,6 +146,11 @@ function StockTable() {
          )
       ) {
          const url = "https://apiz.zachklimowicz.com/stocks/delete/" + stockID;
+=======
+   const deleteStock = async (stockID: string) => {
+      if (confirm("Are you sure you want to delete the stock? This cannot be undone.")) {
+         const url = `https://apiz.zachklimowicz.com/stocks/delete/${stockID}`;
+>>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
          try {
             const response = await fetch(url, {
                method: "DELETE",
@@ -146,9 +161,13 @@ function StockTable() {
                alert(message);
                console.log(message);
             } else {
+<<<<<<< HEAD
                alert("Stock " + stockID + " deleted successfully.");
+=======
+               alert("User " + stockID + " deleted successfully.");
+               window.location.reload();
+>>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
             }
-            window.location.reload();
          } catch (err) {
             alert("Stock delete failed");
             console.error(err);
@@ -237,7 +256,7 @@ function StockTable() {
                      <DropdownMenuContent align="end">
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={(e) => {
+                           onClick={() => {
                               setIsEdit(true);
                            }}
                         >
@@ -245,8 +264,8 @@ function StockTable() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={(e) => {
-                              deleteStock(stock.stockID, e);
+                           onClick={() => {
+                              deleteStock(stock.stockID);
                            }}
                         >
                            Delete
@@ -262,7 +281,7 @@ function StockTable() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                            className="cursor-pointer"
-                           onClick={(e) => {
+                           onClick={() => {
                               setIsEdit(false);
                            }}
                         >
@@ -277,7 +296,11 @@ function StockTable() {
    );
 }
 
+<<<<<<< HEAD
 // Main Stocks component
+=======
+
+>>>>>>> 000b5ee9f74a28345fc2668940fe3f13f0eba48d
 export default function Stocks() {
    return (
       <>

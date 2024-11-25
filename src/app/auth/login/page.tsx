@@ -7,7 +7,7 @@ import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CookiesProvider, useCookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 import md5 from "md5";
 
 const LoginPage = () => {
@@ -25,9 +25,7 @@ const LoginPage = () => {
 
       try {
          const response = await fetch(
-            `https://apiz.zachklimowicz.com/login?username=${username}&hash=${md5(
-               password
-            )}`,
+            `https://apiz.zachklimowicz.com/login?username=${username}&hash=${md5(password)}`,
             {
                method: "POST",
                headers: {

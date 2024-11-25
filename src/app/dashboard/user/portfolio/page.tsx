@@ -32,7 +32,6 @@ export default function BuySellStocks() {
 
   const [portfolio, setPortfolio] = useState<PortfolioEntry[]>([]);
   const [stockDetails, setStockDetails] = useState<Record<string, Stock>>({});
-  const [tokenCookie] = useCookies(["AccessToken"]);
   const [userCookie] = useCookies(["UserID"]);
   const [error, setError] = useState<string | null>(null);
 

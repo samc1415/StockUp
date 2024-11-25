@@ -21,7 +21,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import md5 from "md5";
 
-export default function Users() {
+export function Users() {
    type User = {
       userID: string;
       userType: number;
@@ -31,6 +31,9 @@ export default function Users() {
       startingWallet: number;
    };
 
+}
+
+export function UserTable() {
    const router = useRouter();
    const [data, setData] = useState<User[]>([]);
    const [isLoading, setIsLoading] = useState(true);
